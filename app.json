@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "exp://",
     "name": "rythmy",
     "slug": "rythmy",
     "version": "1.0.0",

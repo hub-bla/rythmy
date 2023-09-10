@@ -5,7 +5,7 @@ import { Button } from "react-native"
 import { useAuthContext } from "../context"
 
 export const Login: React.FC = () => {
-	const { getToken, tokenData, setInitUrl } = useAuthContext()
+	const { getToken, setInitUrl, isAuthorized } = useAuthContext()
 	let url = Linking.useURL()
 
 	const authUrl = getAuthUrl(url)
@@ -15,16 +15,16 @@ export const Login: React.FC = () => {
 			const temp_url: URL = new URL(url)
 			const { searchParams } = temp_url
 			const code: string = decodeURIComponent(searchParams.get("code"))
-			if (code != "null") {
+			// console.log(code, "code")
+			if (code != "null" && !isAuthorized) {
+				console.log("URLLL", url.split("?")[0])
 				getToken(code, url.split("?")[0])
-                setInitUrl(url.split("?")[0])
 			}
 		}
 		if (url != null) {
 			decodeUrl()
 		}
 	}, [url])
-	console.log(tokenData)
 	return (
 		<>
 			<Button
