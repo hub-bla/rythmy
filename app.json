@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "966449c3-7017-41c8-bccf-59f262be5d0e"
+      }
+    },
+    "owner": "hub-bla"
   }
 }
