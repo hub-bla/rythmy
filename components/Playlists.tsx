@@ -1,22 +1,37 @@
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { useAuthContext } from "../context"
 import { getCurrentUserPlaylists } from "../utils/currentUser"
 import { Playlist } from "../utils/currentUser"
 import { useState, useEffect } from "react"
+import { getSongsFromPlaylist } from "../utils"
+import { usePlaylistContext, usePlaylistContextValues } from "../context/PlaylistContext"
+
 export const Playlists: React.FC = () => {
 	const { tokenData } = useAuthContext()
-	const [playlists, setPlaylists] = useState([])
+	const {handleSongsData} = usePlaylistContext()
+	const [playlistsArrOfObj, setplaylistsArrOfObj] = useState([])
+	const [selectedPlaylist, setSelectedPlaylist] = useState(null)
+	const [loading, setLoading] = useState(true)
+
+	const getPressedPlaylist = (name: string) => {
+		const { href } = playlistsArrOfObj.find((playlist) => playlist.name == name)
+		handleSongsData(href, tokenData.access_token)
+	}
+
 	useEffect(() => {
 		getCurrentUserPlaylists(tokenData.access_token).then((data: [Playlist]) => {
-			setPlaylists(
-				data.map((playlist: Playlist) => (
-					<View key={playlist.href} style={styles.playlist}>
-						<Text>{playlist.name}</Text>
-					</View>
-				))
-			)
+			setplaylistsArrOfObj(data)
 		})
 	}, [])
+	const playlists = playlistsArrOfObj.map((playlist: Playlist) => (
+		<TouchableOpacity
+			key={playlist.href}
+			onPress={() => getPressedPlaylist(playlist.name)}>
+			<View style={styles.playlist}>
+				<Text>{playlist.name}</Text>
+			</View>
+		</TouchableOpacity>
+	))
 
 	return <>{playlists}</>
 }
@@ -28,6 +43,6 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fca103",
 		alignItems: "center",
 		justifyContent: "center",
-        margin: 10,
+		margin: 10,
 	},
 })
