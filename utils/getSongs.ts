@@ -22,10 +22,7 @@ type SongsFeaturesData = {
 	audio_features: SongFeature[]
 }
 
-export const getSongsFromPlaylist = async (
-	href: string,
-	token: string,
-) => {
+export const getSongsFromPlaylist = async (href: string, token: string) => {
 	const PlaylistData = await (
 		await fetch(href, {
 			headers: {
@@ -38,10 +35,10 @@ export const getSongsFromPlaylist = async (
 	PlaylistData.items.map((song: SongData) => {
 		const { name, artists, id, uri } = song.track
 		const artist: string = artists[0].name
-		
+
 		songData[id] = {
 			name: artist + "-" + name,
-			uri
+			uri,
 		}
 	})
 	let n = Object.keys(songData).length
@@ -53,7 +50,7 @@ export const getSongsFromPlaylist = async (
 		i += 100
 	}
 
-    let idTempoArr:[string, number][] = []
+	let idTempoArr: [string, number][] = []
 
 	for (let i = 0; i < songIds.length; i++) {
 		const chunk = songIds[i].join(",")
@@ -67,23 +64,21 @@ export const getSongsFromPlaylist = async (
 			.json()
 			.then((data: SongsFeaturesData) => {
 				const { audio_features: songs } = data
-				//it data is returned in the same order as was the requested
+				//data is returned in the same order as was the requested
 				for (let i = 0; i < songs.length; i++) {
 					const { tempo, duration_ms, energy, id } = songs[i]
 
-					
 					songData[id] = {
-						tempo: tempo < 100 ? tempo*2 : tempo,
+						tempo: tempo < 100 ? tempo * 2 : tempo,
 						duration_ms,
 						energy,
 						...songData[id],
 					}
-                    idTempoArr.push([id, tempo < 100 ? tempo*2 : tempo])
+					idTempoArr.push([id, tempo < 100 ? tempo * 2 : tempo])
 				}
 			})
 			.catch((err) => console.log(err))
-            idTempoArr = idTempoArr.sort((a, b) => b[1]- a[1])
+		idTempoArr = idTempoArr.sort((a, b) => b[1] - a[1])
 	}
-    console.log("check")
-    return {idTempoArr, songData}
+	return { idTempoArr, songData }
 }

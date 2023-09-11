@@ -36,12 +36,12 @@ export const usePlaylistContextValues  = () => {
         let min = matchingTempoArr[0];
         let left = 0
         let right = matchingTempoArr.length
-
-        console.log(currentCadence)
+        
         while (left<right){
             let middle = Math.floor((right+left)/2)
             const distance = Math.abs(currentCadence - matchingTempoArr[middle][1])
             if (distance < min[1]){
+                
                 min = matchingTempoArr[middle]
             }
             if (currentCadence>matchingTempoArr[middle][1]){
@@ -52,11 +52,11 @@ export const usePlaylistContextValues  = () => {
                 left = middle+1
             }
         }
-
+        
         return songs[min[0]]
     }
 
 
 
-    return {handleSongsData, findSuitableSong, isPicked}
+    return {handleSongsData, findSuitableSong, isPicked, matchingTempoArr}
 }

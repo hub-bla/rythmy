@@ -11,7 +11,7 @@ export const usePlayerContext = () => {
 }
 
 export const usePlayerContextValues = () => {
-	const [currentSong, setCurrentSong] = useState(null)
+	
 	const [devices, setDevices] = useState([])
 	const [currentDevice, setCurrDevice] = useState(null)
 	const getDevices = async (token: string) => {
@@ -24,7 +24,6 @@ export const usePlayerContextValues = () => {
 		)
 			.json()
 			.then((data) => {
-				console.log("DATA", typeof data)
 				setDevices(
 					data.devices.map((device) => {
 						return {
@@ -37,11 +36,9 @@ export const usePlayerContextValues = () => {
 	}
 
 	const playSong = async (song, token) => {
-        console.log(song.uri)
-        console.log(currentDevice)
-		if (currentSong != song && currentDevice) {
-            //add to queue
-			
+		if (currentDevice) {
+			//add to queue
+
 			await fetch(
 				`https://api.spotify.com/v1/me/player/queue?uri=${song.uri}&device_id=${currentDevice.id}`,
 				{
@@ -50,7 +47,7 @@ export const usePlayerContextValues = () => {
 						Authorization: "Bearer " + token,
 					},
 				}
-			)
+			).catch(err => console.log("ERROR", err))
 
 			//skip to added track
 			await fetch(`https://api.spotify.com/v1/me/player/next`, {
@@ -61,10 +58,10 @@ export const usePlayerContextValues = () => {
 				body: new URLSearchParams({
 					device_id: currentDevice.id,
 				}).toString(),
-			})
-            setCurrentSong(song)
+			}).catch(err => console.log("ERROR", err))
+			
 		}
 	}
-
-	return { getDevices, devices, setCurrDevice, currentDevice, playSong }
+	
+	return { getDevices, devices, setCurrDevice, currentDevice, playSong}
 }
