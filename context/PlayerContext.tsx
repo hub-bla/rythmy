@@ -11,10 +11,9 @@ export const usePlayerContext = () => {
 }
 
 export const usePlayerContextValues = () => {
-	
 	const [devices, setDevices] = useState([])
 	const [currentDevice, setCurrDevice] = useState(null)
-	const getDevices = async (token: string) => {
+	const getDevices = async (token:string) => {
 		await (
 			await fetch(`https://api.spotify.com/v1/me/player/devices`, {
 				headers: {
@@ -38,7 +37,6 @@ export const usePlayerContextValues = () => {
 	const playSong = async (song, token) => {
 		if (currentDevice) {
 			//add to queue
-
 			await fetch(
 				`https://api.spotify.com/v1/me/player/queue?uri=${song.uri}&device_id=${currentDevice.id}`,
 				{
@@ -47,7 +45,7 @@ export const usePlayerContextValues = () => {
 						Authorization: "Bearer " + token,
 					},
 				}
-			).catch(err => console.log("ERROR", err))
+			).catch((err) => console.log("ERROR", err))
 
 			//skip to added track
 			await fetch(`https://api.spotify.com/v1/me/player/next`, {
@@ -58,10 +56,42 @@ export const usePlayerContextValues = () => {
 				body: new URLSearchParams({
 					device_id: currentDevice.id,
 				}).toString(),
-			}).catch(err => console.log("ERROR", err))
-			
+			}).catch((err) => console.log("ERROR", err))
 		}
 	}
-	
-	return { getDevices, devices, setCurrDevice, currentDevice, playSong}
+
+	const pausePlayer = async (token) => {
+		if (currentDevice){
+			await fetch(`https://api.spotify.com/v1/me/player/pause`, {
+				method: "PUT",
+				headers: {
+					Authorization: "Bearer " + token,
+					body: new URLSearchParams({
+						device_id: currentDevice.id,
+					}).toString(),
+				},
+			})
+		}
+	}
+
+
+	const handleEndOfSong = async (token) => {
+		const {progress_ms} = await (await fetch(`https://api.spotify.com/v1/me/player`, {
+				headers: {
+					Authorization: "Bearer " + token,
+				},
+			})).json()
+
+		return progress_ms
+		
+	}
+	return {
+		getDevices,
+		devices,
+		setCurrDevice,
+		currentDevice,
+		playSong,
+		pausePlayer,
+		handleEndOfSong
+	}
 }

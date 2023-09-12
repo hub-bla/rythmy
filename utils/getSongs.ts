@@ -50,7 +50,12 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 		i += 100
 	}
 
-	let idTempoArr: [string, number][] = []
+	let idTempoObj: object = {}
+	for (let i = 90; i < 210; ) {
+		idTempoObj[i] = []
+	
+		i += 10
+	}
 
 	for (let i = 0; i < songIds.length; i++) {
 		const chunk = songIds[i].join(",")
@@ -68,17 +73,20 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 				for (let i = 0; i < songs.length; i++) {
 					const { tempo, duration_ms, energy, id } = songs[i]
 
+					const correctTempo = tempo < 90 ? tempo * 2 : tempo
+					const key = Math.floor(correctTempo / 10) * 10
 					songData[id] = {
-						tempo: tempo < 100 ? tempo * 2 : tempo,
+						tempo: tempo < 90 ? tempo * 2 : tempo,
 						duration_ms,
 						energy,
+						key,
 						...songData[id],
 					}
-					idTempoArr.push([id, tempo < 100 ? tempo * 2 : tempo])
+					idTempoObj[key].push([id, correctTempo])
 				}
 			})
 			.catch((err) => console.log(err))
-		idTempoArr = idTempoArr.sort((a, b) => b[1] - a[1])
 	}
-	return { idTempoArr, songData }
+	// console.log(idTempoObj)
+	return { idTempoObj, songData }
 }
