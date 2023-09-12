@@ -1,3 +1,5 @@
+import { Songs, matchingTempoObj } from "../context/PlaylistContext"
+
 type Artist = {
 	name: string
 }
@@ -31,7 +33,7 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 		})
 	).json()
 
-	const songData = {}
+	const songData:Songs = {}
 	PlaylistData.items.map((song: SongData) => {
 		const { name, artists, id, uri } = song.track
 		const artist: string = artists[0].name
@@ -39,6 +41,10 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 		songData[id] = {
 			name: artist + "-" + name,
 			uri,
+			tempo: null,
+			duration_ms:null,
+			energy:null,
+			key:null,
 		}
 	})
 	let n = Object.keys(songData).length
@@ -50,7 +56,7 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 		i += 100
 	}
 
-	let idTempoObj: object = {}
+	let idTempoObj: matchingTempoObj = {}
 	for (let i = 90; i < 210; ) {
 		idTempoObj[i] = []
 	
@@ -76,11 +82,11 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 					const correctTempo = tempo < 90 ? tempo * 2 : tempo
 					const key = Math.floor(correctTempo / 10) * 10
 					songData[id] = {
+						...songData[id],
 						tempo: tempo < 90 ? tempo * 2 : tempo,
 						duration_ms,
 						energy,
 						key,
-						...songData[id],
 					}
 					idTempoObj[key].push([id, correctTempo])
 				}

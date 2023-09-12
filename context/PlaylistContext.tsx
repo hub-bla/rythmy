@@ -1,7 +1,27 @@
 import { createContext, useContext, useState } from "react"
 import { getSongsFromPlaylist } from "../utils"
 
-export const PlaylistContext = createContext(null)
+export type SongType = {
+	tempo: number
+	duration_ms: number
+	energy: number
+	key: number
+	uri: string
+	name: string
+}
+
+export type Songs = { [id: string]: SongType }
+
+export type matchingTempoObj = { [key: number]: [id: string, tempo: number][] }
+
+export type usePlaylistContextValuesType = {
+	handleSongsData?: (href: string, token: string) => void
+	findSuitableSong?: (key: number, to_delete?: SongType) => SongType
+	isPicked?: boolean
+	matchingTempoObj?: matchingTempoObj
+}
+
+export const PlaylistContext = createContext<usePlaylistContextValuesType>(null)
 
 export const usePlaylistContext = () => {
 	const context = useContext(PlaylistContext)
@@ -15,8 +35,8 @@ export const usePlaylistContext = () => {
 }
 
 export const usePlaylistContextValues = () => {
-	const [songs, setSongs] = useState({})
-	const [matchingTempoObj, setMatchingTempoObj] = useState({})
+	const [songs, setSongs] = useState<Songs>({})
+	const [matchingTempoObj, setMatchingTempoObj] = useState<matchingTempoObj>({})
 	const [isPicked, setIsPicked] = useState(false)
 
 	const handleSongsData = (href: string, token: string) => {
@@ -27,20 +47,21 @@ export const usePlaylistContextValues = () => {
 		setIsPicked(true)
 	}
 
-	const findSuitableSong = (key: number, to_delete = null) => {
-		let delete_id = null
+	const findSuitableSong = (key: number, to_delete: SongType | null = null) => {
+		let delete_id: string | null = null
 		if (to_delete) {
-			delete_id = to_delete.uri.replace("spotify:track:","")
+			delete_id = to_delete.uri.replace("spotify:track:", "")
+
 			const newArr = matchingTempoObj[key].filter(
 				(idTempo) => idTempo[0] != delete_id
 			)
+
 			setMatchingTempoObj((prev) => {
 				prev[key] = newArr
 				return prev
 			})
-
 		}
-		console.log(delete_id)
+
 		const tempoArr = delete_id
 			? matchingTempoObj[key].filter((idTempo) => idTempo[0] != delete_id)
 			: matchingTempoObj[key]
@@ -53,11 +74,10 @@ export const usePlaylistContextValues = () => {
 		}
 	}
 
-	const deleteSong = (id: string) => {
-		setMatchingTempoObj((prevMatchingTempoObj) => {
-			delete prevMatchingTempoObj[id]
-			return prevMatchingTempoObj
-		})
+	return {
+		handleSongsData,
+		findSuitableSong,
+		isPicked,
+		matchingTempoObj,
 	}
-	return { handleSongsData, findSuitableSong, isPicked, deleteSong, matchingTempoObj }
 }

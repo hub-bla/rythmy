@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react"
 import { Button, Text, View, TouchableOpacity, StyleSheet } from "react-native"
-import { usePlaylistContext } from "../context/PlaylistContext"
+import { usePlaylistContext, usePlaylistContextValuesType } from "../context/PlaylistContext"
 import { useAuthContext } from "../context"
 import { usePlayerContext } from "../context/PlayerContext"
 import { Pedometer } from "expo-sensors"
 
 export const RunPage: React.FC = () => {
-	const { findSuitableSong, isPicked, deleteSong, matchingTempoObj } = usePlaylistContext()
+	const { findSuitableSong, isPicked, matchingTempoObj } =
+		usePlaylistContext()
 	const {
 		getDevices,
 		devices,
@@ -20,8 +21,7 @@ export const RunPage: React.FC = () => {
 
 	const [currentStepCount, setCurrentStepCount] = useState(0)
 	const [currentSong, setCurrentSong] = useState(null)
-	const [isPaused, setIsPaused] = useState(false)
-	const [currentKey, setCurrentKey] = useState(null)
+
 	useEffect(() => {
 		if (isPicked && currentDevice) {
 			const interval = setInterval(() => {
@@ -38,11 +38,8 @@ export const RunPage: React.FC = () => {
 					console.log("CADENCE", cadence)
 					console.log("CURRENT SONG", currentSong)
 					console.log("KEY", currentSong ? currentSong.key : null)
-					console.log("PAUSED", isPaused)
 					if (cadence == 0) {
-						// console.log("CADENCE", cadence)
 						pausePlayer(tokenData.access_token).then()
-						// setIsPaused(true)
 						setCurrentSong(null)
 					} else if (currentSong && currentSong.key == key) {
 						const { duration_ms } = currentSong
@@ -52,15 +49,12 @@ export const RunPage: React.FC = () => {
 							if (last_ms <= 5000) {
 								console.log("END")
 								setTimeout(() => {
-									deleteSong()
 									const song = findSuitableSong(key, currentSong)
 									console.log("PICKED SONG", song)
-									if (song){
+									if (song) {
 										playSong(song, tokenData.access_token).then()
 									}
 									setCurrentSong(song)
-
-									
 								}, last_ms)
 							}
 						})
@@ -70,11 +64,9 @@ export const RunPage: React.FC = () => {
 						if (song && currentSong && currentSong.key != song.key) {
 							playSong(song, tokenData.access_token).then()
 							setCurrentSong(song)
-							// setIsPaused(false)
 						} else if (song && !currentSong) {
 							playSong(song, tokenData.access_token).then()
 							setCurrentSong(song)
-							// setIsPaused(false)
 						}
 					}
 					setCurrentStepCount(cadence)
