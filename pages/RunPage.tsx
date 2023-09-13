@@ -1,24 +1,18 @@
 import { useState, useEffect } from "react"
-import { Button, Text, View, TouchableOpacity, StyleSheet } from "react-native"
-import { usePlaylistContext, usePlaylistContextValuesType } from "../context/PlaylistContext"
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native"
+import { usePlaylistContext } from "../context/PlaylistContext"
 import { useAuthContext } from "../context"
-import { usePlayerContext } from "../context/PlayerContext"
+import { Device, usePlayerContext } from "../context/PlayerContext"
 import { Pedometer } from "expo-sensors"
 
 export const RunPage: React.FC = () => {
-	const { findSuitableSong, isPicked, matchingTempoObj } =
-		usePlaylistContext()
-	const {
-		getDevices,
-		devices,
-		setCurrDevice,
-		currentDevice,
-		playSong,
-		pausePlayer,
-		handleEndOfSong,
-	} = usePlayerContext()
-	const { tokenData } = useAuthContext()
+	const { findSuitableSong, isPicked, matchingTempoObj } = usePlaylistContext()
 
+	const { getDevices, devices, playSong, pausePlayer, handleEndOfSong } =
+		usePlayerContext()
+
+	const { tokenData } = useAuthContext()
+	const [currentDevice, setCurrDevice] = useState<Device>(null)
 	const [currentStepCount, setCurrentStepCount] = useState(0)
 	const [currentSong, setCurrentSong] = useState(null)
 
@@ -39,7 +33,7 @@ export const RunPage: React.FC = () => {
 					console.log("CURRENT SONG", currentSong)
 					console.log("KEY", currentSong ? currentSong.key : null)
 					if (cadence == 0) {
-						pausePlayer(tokenData.access_token).then()
+						pausePlayer(tokenData.access_token, currentDevice).then()
 						setCurrentSong(null)
 					} else if (currentSong && currentSong.key == key) {
 						const { duration_ms } = currentSong
@@ -52,7 +46,7 @@ export const RunPage: React.FC = () => {
 									const song = findSuitableSong(key, currentSong)
 									console.log("PICKED SONG", song)
 									if (song) {
-										playSong(song, tokenData.access_token).then()
+										playSong(song, tokenData.access_token, currentDevice).then()
 									}
 									setCurrentSong(song)
 								}, last_ms)
@@ -62,10 +56,10 @@ export const RunPage: React.FC = () => {
 						//check position of song
 						const song = findSuitableSong(key)
 						if (song && currentSong && currentSong.key != song.key) {
-							playSong(song, tokenData.access_token).then()
+							playSong(song, tokenData.access_token, currentDevice).then()
 							setCurrentSong(song)
 						} else if (song && !currentSong) {
-							playSong(song, tokenData.access_token).then()
+							playSong(song, tokenData.access_token, currentDevice).then()
 							setCurrentSong(song)
 						}
 					}
@@ -79,6 +73,8 @@ export const RunPage: React.FC = () => {
 	useEffect(() => {
 		getDevices(tokenData.access_token)
 	}, [])
+
+	
 	const devicesArr = devices.map((device) => {
 		return (
 			<TouchableOpacity

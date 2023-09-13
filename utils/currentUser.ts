@@ -10,7 +10,7 @@ export type Playlist = {
 
 export const getCurrentUserPlaylists: (
 	token: string
-) => Promise<[Playlist]> = async (token: string) => {
+) => Promise<Playlist[]> = async (token: string) => {
 	const currentUserData: CurrentUser = await (
 		await fetch("https://api.spotify.com/v1/me", {
 			headers: {
@@ -28,7 +28,7 @@ export const getCurrentUserPlaylists: (
 			}
 		)
 	).json()
-	const playlists: [Playlist] = playlist_response.items.map(
+	const playlists: Playlist[] = playlist_response.items.map(
 		(playlist: Playlist) => {
 			const { name, href } = playlist
 			return {

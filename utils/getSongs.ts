@@ -47,7 +47,8 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 			key:null,
 		}
 	})
-	let n = Object.keys(songData).length
+
+	const n = Object.keys(songData).length
 	const songIds: string[][] = []
 
 	for (let i = 0; i < n; ) {
@@ -75,7 +76,7 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 			.json()
 			.then((data: SongsFeaturesData) => {
 				const { audio_features: songs } = data
-				//data is returned in the same order as was the requested
+				
 				for (let i = 0; i < songs.length; i++) {
 					const { tempo, duration_ms, energy, id } = songs[i]
 
@@ -93,6 +94,7 @@ export const getSongsFromPlaylist = async (href: string, token: string) => {
 			})
 			.catch((err) => console.log(err))
 	}
-	// console.log(idTempoObj)
+
+
 	return { idTempoObj, songData }
 }

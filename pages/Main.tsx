@@ -5,7 +5,6 @@ import { Text } from "react-native"
 import { useEffect } from "react"
 import { usePlaylistContext } from "../context/PlaylistContext"
 import { RunPage } from "./RunPage"
-import { PlayerContext, usePlayerContextValues } from "../context/PlayerContext"
 export const Main: React.FC = () => {
 	const { isAuthorized, refreshToken, tokenData } = useAuthContext()
 	const { isPicked } = usePlaylistContext()
@@ -22,7 +21,6 @@ export const Main: React.FC = () => {
 	if (isPicked) {
 		return <RunPage />
 	}
-	console.log(isPicked)
 	return (
 		<>
 			<Playlists />

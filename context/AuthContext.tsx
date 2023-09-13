@@ -1,12 +1,20 @@
 import { createContext, useContext, useState } from "react"
 import { Buffer } from "buffer"
-export const AuthContext = createContext(null)
 
-type TokenData = {
+export type TokenData = {
 	refresh_token: string
 	access_token: string
-	expires_in: string
+	expires_in: number
 }
+
+type AuthContextType = {
+	isAuthorized: boolean
+	getToken: (code: string, redirected_uri: string) => Promise<void>
+	tokenData: TokenData
+	refreshToken: () => Promise<void>
+}
+
+export const AuthContext = createContext<AuthContextType>(null)
 
 export const useAuthContext = () => {
 	const context = useContext(AuthContext)
@@ -19,20 +27,15 @@ export const useAuthContext = () => {
 }
 
 export const useAuthContextValues = () => {
-	const [initUrl, setInitUrl] = useState("")
 	const [isAuthorized, setIsAuthorized] = useState(false)
-	const [tokenRequest, setTokenRequest] = useState({
+	const [tokenData, setTokenData] = useState<TokenData | null>(null)
+	const tokenRequest = {
 		client_id: "45803018c87d4b2b9f95ec38e79f5a9f",
 		grant_type: "authorization_code",
 		secret_client: "3b5bf406c52e48e982ad9466ee22f139",
-	})
-	const [tokenData, setTokenData] = useState<TokenData | null>(null)
-	
-	const getToken: (arg1: string, arg2: string) => void = async (
-		code,
-		redirected_url
-	) => {
+	}
 
+	const getToken = async (code: string, redirected_uri: string) => {
 		const authOptions = {
 			method: "POST",
 			headers: {
@@ -46,7 +49,7 @@ export const useAuthContextValues = () => {
 			body: new URLSearchParams({
 				grant_type: "authorization_code",
 				code: code,
-				redirect_uri: redirected_url,
+				redirect_uri: redirected_uri,
 			}).toString(),
 		}
 
@@ -55,7 +58,7 @@ export const useAuthContextValues = () => {
 			authOptions
 		)
 
-		response.json().then((data) => {
+		response.json().then((data:TokenData) => {
 			console.log("data", data)
 			setTokenData({
 				refresh_token: data.refresh_token,
@@ -66,8 +69,7 @@ export const useAuthContextValues = () => {
 		})
 	}
 
-	const refreshToken: () => void = async () => {
-
+	const refreshToken = async () => {
 		const authOptions = {
 			method: "POST",
 			headers: {
@@ -84,13 +86,11 @@ export const useAuthContextValues = () => {
 			}).toString(),
 		}
 
-		
-
 		const response = await fetch(
 			"https://accounts.spotify.com/api/token",
 			authOptions
 		)
-
+		console.log("Refresh token response", response)
 		response.json().then((data) => {
 			setTokenData((prevTokenData) => {
 				console.log(data.access_token)
@@ -101,14 +101,11 @@ export const useAuthContextValues = () => {
 				}
 			})
 		})
-
 	}
 	return {
 		isAuthorized,
 		getToken,
-		tokenRequest,
 		tokenData,
-		setInitUrl,
 		refreshToken,
 	}
 }

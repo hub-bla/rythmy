@@ -3,15 +3,13 @@ import { useAuthContext } from "../context"
 import { getCurrentUserPlaylists } from "../utils/currentUser"
 import { Playlist } from "../utils/currentUser"
 import { useState, useEffect } from "react"
-import { getSongsFromPlaylist } from "../utils"
-import { usePlaylistContext, usePlaylistContextValues } from "../context/PlaylistContext"
+import { usePlaylistContext } from "../context/PlaylistContext"
 
 export const Playlists: React.FC = () => {
 	const { tokenData } = useAuthContext()
 	const {handleSongsData} = usePlaylistContext()
 	const [playlistsArrOfObj, setplaylistsArrOfObj] = useState([])
-	const [selectedPlaylist, setSelectedPlaylist] = useState(null)
-	const [loading, setLoading] = useState(true)
+	
 
 	const getPressedPlaylist = (name: string) => {
 		const { href } = playlistsArrOfObj.find((playlist) => playlist.name == name)
