@@ -1,4 +1,4 @@
-import { Button } from "react-native"
+import { Button, ScrollView } from "react-native"
 import { Login, Playlists } from "../components"
 import { useAuthContext } from "../context"
 import { Text } from "react-native"
@@ -23,8 +23,6 @@ export const Main: React.FC = () => {
 		return <RunPage />
 	}
 	return (
-		<>
 			<Playlists />
-		</>
 	)
 }

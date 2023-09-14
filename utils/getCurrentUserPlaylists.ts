@@ -2,10 +2,23 @@ type CurrentUser = {
 	id: string
 }
 
+type ImageData = {
+	width: number
+	height: number
+	url: string
+}
+
 export type Playlist = {
 	href: string
 	name: string
 	picked: boolean
+	images:
+		| {
+				url: string
+				width: number
+				height: number
+		  }
+		| undefined
 }
 
 export const getCurrentUserPlaylists: (
@@ -30,10 +43,15 @@ export const getCurrentUserPlaylists: (
 	).json()
 	const playlists: Playlist[] = playlist_response.items.map(
 		(playlist: Playlist) => {
-			const { name, href } = playlist
+			const { name, href, images } = playlist
 			return {
 				name: name,
 				href: href + "/tracks?limit=50",
+				images: {
+					url: images[0]?.url,
+					width: images[0]?.width,
+					height: images[0]?.height,
+				},
 				picked: false,
 			}
 		}

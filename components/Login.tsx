@@ -10,6 +10,7 @@ import {
 	TouchableOpacity,
 } from "react-native"
 import { useAuthContext } from "../context"
+import { Title } from "./styledComponents/Tittle"
 
 export const Login: React.FC = () => {
 	const { getToken, isAuthorized } = useAuthContext()
@@ -33,7 +34,7 @@ export const Login: React.FC = () => {
 	}, [url])
 	return (
 		<View style={style.container}>
-			<Text style={style.title}>Keep the beat</Text>
+			<Title>Keep the beat</Title>
 			<View style={style.containerRunningBoombox}>
 				<TouchableOpacity
 					onPress={() => {
@@ -42,11 +43,11 @@ export const Login: React.FC = () => {
 					style={style.imageContainer}>
 					<Text style={style.runningText}>Start Running</Text>
 					<Image
-						source={require("../assets/boombox.png")}
+						source={require("../assets/BoomboxButton/boombox.png")}
 						style={style.boombox}
 					/>
 				</TouchableOpacity>
-				<Image source={require("../assets/legs.png")} style={style.legs} />
+				<Image source={require("../assets/BoomboxButton/legs.png")} style={style.legs} />
 			</View>
 		</View>
 	)
@@ -54,8 +55,8 @@ export const Login: React.FC = () => {
 
 const style = StyleSheet.create({
 	container: {
-		width: '100%',
-		height: '60%',
+		width: "100%",
+		height: "60%",
 		display: "flex",
 		justifyContent: "space-evenly",
 		alignItems: "center",
@@ -66,10 +67,7 @@ const style = StyleSheet.create({
 		alignItems: "center",
 		flexDirection: "column",
 	},
-	title: {
-		fontSize: 50,
-		fontWeight: 'bold',
-	},
+
 	imageContainer: {
 		position: "relative",
 	},

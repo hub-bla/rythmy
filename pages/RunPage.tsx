@@ -4,6 +4,7 @@ import { usePlaylistContext } from "../context/PlaylistContext"
 import { useAuthContext } from "../context"
 import { Device, usePlayerContext } from "../context/PlayerContext"
 import { Pedometer } from "expo-sensors"
+import { Cadencometer } from "../components/Cadencometer"
 
 export const RunPage: React.FC = () => {
 	const { findSuitableSong, isPicked, matchingTempoObj } = usePlaylistContext()
@@ -102,7 +103,7 @@ export const RunPage: React.FC = () => {
 				<>
 					<Text>Current device: {currentDevice.name}</Text>
 					<View>
-						<Text>Walk! And watch this go up: {currentStepCount}</Text>
+						<Cadencometer cadence={currentStepCount}/>
 					</View>
 				</>
 			)}
