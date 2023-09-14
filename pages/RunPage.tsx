@@ -73,8 +73,6 @@ export const RunPage: React.FC = () => {
 	useEffect(() => {
 		getDevices(tokenData.access_token)
 	}, [])
-
-	
 	const devicesArr = devices.map((device) => {
 		return (
 			<TouchableOpacity

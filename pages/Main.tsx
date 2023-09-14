@@ -10,7 +10,8 @@ export const Main: React.FC = () => {
 	const { isPicked } = usePlaylistContext()
 	useEffect(() => {
 		if (isAuthorized && tokenData.access_token != null) {
-			setInterval(() => refreshToken(), tokenData.expires_in * 1000)
+			const interval  = setInterval(() => refreshToken(), tokenData.expires_in * 1000)
+			return () => clearInterval(interval)
 		}
 	}, [isAuthorized])
 

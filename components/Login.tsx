@@ -1,7 +1,14 @@
 import { useEffect } from "react"
 import * as Linking from "expo-linking"
 import { getAuthUrl } from "../utils"
-import { Button } from "react-native"
+import {
+	Button,
+	StyleSheet,
+	Image,
+	View,
+	Text,
+	TouchableOpacity,
+} from "react-native"
 import { useAuthContext } from "../context"
 
 export const Login: React.FC = () => {
@@ -25,13 +32,63 @@ export const Login: React.FC = () => {
 		}
 	}, [url])
 	return (
-		<>
-			<Button
-				onPress={() => {
-					Linking.openURL(authUrl)
-				}}
-				title='Authorize with Spotify'
-			/>
-		</>
+		<View style={style.container}>
+			<Text style={style.title}>Keep the beat</Text>
+			<View style={style.containerRunningBoombox}>
+				<TouchableOpacity
+					onPress={() => {
+						Linking.openURL(authUrl)
+					}}
+					style={style.imageContainer}>
+					<Text style={style.runningText}>Start Running</Text>
+					<Image
+						source={require("../assets/boombox.png")}
+						style={style.boombox}
+					/>
+				</TouchableOpacity>
+				<Image source={require("../assets/legs.png")} style={style.legs} />
+			</View>
+		</View>
 	)
 }
+
+const style = StyleSheet.create({
+	container: {
+		width: '100%',
+		height: '60%',
+		display: "flex",
+		justifyContent: "space-evenly",
+		alignItems: "center",
+		flexDirection: "column",
+	},
+	containerRunningBoombox: {
+		display: "flex",
+		alignItems: "center",
+		flexDirection: "column",
+	},
+	title: {
+		fontSize: 50,
+		fontWeight: 'bold',
+	},
+	imageContainer: {
+		position: "relative",
+	},
+	legs: {
+		maxHeight: 205,
+		maxWidth: 210,
+	},
+	boombox: {
+		width: 305,
+		height: 150,
+		zIndex: -1,
+	},
+	runningText: {
+		width: 110,
+		fontSize: 26,
+		textAlign: "center",
+		color: "#FFF8F0",
+		position: "absolute",
+		top: 60,
+		left: 100,
+	},
+})
