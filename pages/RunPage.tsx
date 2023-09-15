@@ -11,7 +11,7 @@ import { useAuthContext } from "../context"
 import { Device, usePlayerContext } from "../context/PlayerContext"
 import { Pedometer } from "expo-sensors"
 import { Cadencometer } from "../components/Cadencometer"
-
+import { Button } from "../components/styledComponents/Button"
 export const RunPage: React.FC = () => {
 	const { findSuitableSong, isPicked, matchingTempoObj } = usePlaylistContext()
 
@@ -23,8 +23,6 @@ export const RunPage: React.FC = () => {
 	const [currentStepCount, setCurrentStepCount] = useState(0)
 	const [currentSong, setCurrentSong] = useState(null)
 	const [prevCadence, setPrevCadence] = useState(0)
-
-	
 
 	useEffect(() => {
 		if (isPicked && currentDevice) {
@@ -63,7 +61,6 @@ export const RunPage: React.FC = () => {
 							}
 						})
 					} else {
-						//check position of song
 						const song = findSuitableSong(key)
 						if (song && currentSong && currentSong.key != song.key) {
 							playSong(song, tokenData.access_token, currentDevice).then()
@@ -73,7 +70,6 @@ export const RunPage: React.FC = () => {
 							setCurrentSong(song)
 						}
 					}
-					
 
 					setPrevCadence(currentStepCount)
 					setCurrentStepCount(cadence)
@@ -86,6 +82,7 @@ export const RunPage: React.FC = () => {
 	useEffect(() => {
 		getDevices(tokenData.access_token)
 	}, [])
+
 	const devicesArr = devices.map((device) => {
 		return (
 			<TouchableOpacity
@@ -110,17 +107,26 @@ export const RunPage: React.FC = () => {
 				<>
 					<Text>Pick device</Text>
 					{devicesArr}
+					<Button
+						title='Refresh'
+						onPress={() => {
+							getDevices(tokenData.access_token)
+						}}
+					/>
 				</>
 			) : (
 				<>
-					<Text>Current device: {currentDevice.name}</Text>
-					<View>
-						<Cadencometer
-							cadence={currentStepCount}
-							prevCadence={prevCadence}
-						
+					<View style={styles.deviceContainer}>
+						<Text style={styles.deviceText}>Current device:</Text>
+						<Text style={styles.deviceText}>{currentDevice.name}</Text>
+						<Button
+							title='Change device'
+							onPress={() => {
+								setCurrDevice(null)
+							}}
 						/>
 					</View>
+					<Cadencometer cadence={currentStepCount} prevCadence={prevCadence} />
 				</>
 			)}
 		</>
@@ -130,5 +136,22 @@ export const RunPage: React.FC = () => {
 const styles = StyleSheet.create({
 	device: {
 		height: 50,
+	},
+	
+	pageContainer: {
+		alignItems: "center",
+		justifyContent: "space-evenly",
+		height: "100%",
+		width: "100%",
+	},
+	deviceContainer: {
+		alignItems: "center",
+		margin: 20,
+	},
+	deviceText: {
+		fontWeight: "bold",
+		fontSize: 22,
+		margin: 10,
+		textAlign: "center",
 	},
 })
