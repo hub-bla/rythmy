@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react"
-import { Text, View, TouchableOpacity, StyleSheet } from "react-native"
+import {
+	Text,
+	View,
+	TouchableOpacity,
+	StyleSheet,
+	Animated,
+} from "react-native"
 import { usePlaylistContext } from "../context/PlaylistContext"
 import { useAuthContext } from "../context"
 import { Device, usePlayerContext } from "../context/PlayerContext"
@@ -16,6 +22,9 @@ export const RunPage: React.FC = () => {
 	const [currentDevice, setCurrDevice] = useState<Device>(null)
 	const [currentStepCount, setCurrentStepCount] = useState(0)
 	const [currentSong, setCurrentSong] = useState(null)
+	const [prevCadence, setPrevCadence] = useState(0)
+
+	
 
 	useEffect(() => {
 		if (isPicked && currentDevice) {
@@ -64,6 +73,9 @@ export const RunPage: React.FC = () => {
 							setCurrentSong(song)
 						}
 					}
+					
+
+					setPrevCadence(currentStepCount)
 					setCurrentStepCount(cadence)
 				})
 			}, 5000)
@@ -103,7 +115,11 @@ export const RunPage: React.FC = () => {
 				<>
 					<Text>Current device: {currentDevice.name}</Text>
 					<View>
-						<Cadencometer cadence={currentStepCount}/>
+						<Cadencometer
+							cadence={currentStepCount}
+							prevCadence={prevCadence}
+						
+						/>
 					</View>
 				</>
 			)}
