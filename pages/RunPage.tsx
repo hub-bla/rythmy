@@ -12,26 +12,28 @@ import { Device, usePlayerContext } from "../context/PlayerContext"
 import { Pedometer } from "expo-sensors"
 import { Cadencometer } from "../components/Cadencometer"
 import { Button } from "../components/styledComponents/Button"
+import { Title } from "../components/styledComponents/Tittle"
 export const RunPage: React.FC = () => {
-	const { findSuitableSong, isPicked, matchingTempoObj } = usePlaylistContext()
+	const { findSuitableSong, isPicked } = usePlaylistContext()
 
 	const { getDevices, devices, playSong, pausePlayer, handleEndOfSong } =
 		usePlayerContext()
 
 	const { tokenData } = useAuthContext()
 	const [currentDevice, setCurrDevice] = useState<Device>(null)
-	const [currentStepCount, setCurrentStepCount] = useState(0)
+	const [currentCadence, setCurrentCadence] = useState(0)
 	const [currentSong, setCurrentSong] = useState(null)
 	const [prevCadence, setPrevCadence] = useState(0)
 
 	useEffect(() => {
 		if (isPicked && currentDevice) {
 			const interval = setInterval(() => {
+				const measureTime = 15
 				const start = new Date()
 				const end = new Date()
-				start.setSeconds(end.getSeconds() - 5)
+				start.setSeconds(end.getSeconds() - measureTime)
 				Pedometer.getStepCountAsync(start, end).then((result) => {
-					const cadence = result.steps * 12
+					const cadence = result.steps * (60/measureTime)
 					const key =
 						Math.floor(cadence / 10) * 10 < 90
 							? 90
@@ -71,13 +73,13 @@ export const RunPage: React.FC = () => {
 						}
 					}
 
-					setPrevCadence(currentStepCount)
-					setCurrentStepCount(cadence)
+					setPrevCadence(currentCadence)
+					setCurrentCadence(cadence)
 				})
 			}, 5000)
 			return () => clearInterval(interval)
 		}
-	}, [isPicked, currentDevice, currentStepCount, currentSong, matchingTempoObj])
+	}, [isPicked, currentDevice, currentCadence, currentSong])
 
 	useEffect(() => {
 		getDevices(tokenData.access_token)
@@ -105,7 +107,7 @@ export const RunPage: React.FC = () => {
 		<>
 			{!currentDevice ? (
 				<>
-					<Text>Pick device</Text>
+					<Title>Pick device</Title>
 					{devicesArr}
 					<Button
 						title='Refresh'
@@ -126,7 +128,7 @@ export const RunPage: React.FC = () => {
 							}}
 						/>
 					</View>
-					<Cadencometer cadence={currentStepCount} prevCadence={prevCadence} />
+					<Cadencometer cadence={currentCadence} prevCadence={prevCadence} />
 				</>
 			)}
 		</>
@@ -135,7 +137,8 @@ export const RunPage: React.FC = () => {
 
 const styles = StyleSheet.create({
 	device: {
-		height: 50,
+		// height: 50,
+		margin:10,
 	},
 	
 	pageContainer: {

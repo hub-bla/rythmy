@@ -6,14 +6,17 @@ export type Device = {
 	name: string
 }
 
-export type PlayerContextType ={
-	getDevices: (token:string) => Promise<void>,
-	devices: Device[],
-	playSong:  (song: SongType, token: string, currentDevice:Device) => Promise<void>,
-	pausePlayer: (token:string, currentDevice:Device) => Promise<void>,
-	handleEndOfSong: (token:string) => Promise<number>,
+export type PlayerContextType = {
+	getDevices: (token: string) => Promise<void>
+	devices: Device[]
+	playSong: (
+		song: SongType,
+		token: string,
+		currentDevice: Device
+	) => Promise<void>
+	pausePlayer: (token: string, currentDevice: Device) => Promise<void>
+	handleEndOfSong: (token: string) => Promise<number>
 }
-
 
 type PlaybackStateType = {
 	progress_ms: number
@@ -29,13 +32,8 @@ export const usePlayerContext = () => {
 	return context
 }
 
-
-
-
-
 export const usePlayerContextValues = () => {
 	const [devices, setDevices] = useState<Device[]>([])
-	
 
 	const getDevices = async (token: string) => {
 		await (
@@ -56,9 +54,14 @@ export const usePlayerContextValues = () => {
 					})
 				)
 			})
+			.catch((err) => err)
 	}
 
-	const playSong = async (song: SongType, token: string, currentDevice:Device) => {
+	const playSong = async (
+		song: SongType,
+		token: string,
+		currentDevice: Device
+	) => {
 		if (currentDevice) {
 			//add to queue
 			await fetch(
@@ -84,7 +87,7 @@ export const usePlayerContextValues = () => {
 		}
 	}
 
-	const pausePlayer = async (token:string, currentDevice:Device) => {
+	const pausePlayer = async (token: string, currentDevice: Device) => {
 		if (currentDevice) {
 			await fetch(`https://api.spotify.com/v1/me/player/pause`, {
 				method: "PUT",
@@ -98,8 +101,8 @@ export const usePlayerContextValues = () => {
 		}
 	}
 
-	const handleEndOfSong = async (token:string) => {
-		const data:PlaybackStateType = await (
+	const handleEndOfSong = async (token: string) => {
+		const data: PlaybackStateType = await (
 			await fetch(`https://api.spotify.com/v1/me/player`, {
 				headers: {
 					Authorization: "Bearer " + token,
