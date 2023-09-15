@@ -66,7 +66,7 @@ export const usePlaylistContextValues = () => {
 			? matchingTempoObj[key].filter((idTempo) => idTempo[0] != delete_id)
 			: matchingTempoObj[key]
 
-		if (tempoArr.length) {
+		if (tempoArr && tempoArr.length) {
 			const randomTrack = Math.floor(Math.random() * tempoArr.length)
 
 			return songs[tempoArr[randomTrack][0]]
