@@ -22,7 +22,6 @@ export const Main: React.FC = () => {
 	if (!isAuthorized) {
 		return (
 			<>
-				<AccelerometerData />
 				<Login />
 			</>
 		)

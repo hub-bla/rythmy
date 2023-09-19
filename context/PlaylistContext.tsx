@@ -9,7 +9,6 @@ export type SongType = {
 	uri: string
 	name: string
 }
-
 export type Songs = { [id: string]: SongType }
 
 export type matchingTempoObj = { [key: number]: [id: string, tempo: number][] }
@@ -19,6 +18,7 @@ export type usePlaylistContextValuesType = {
 	findSuitableSong?: (key: number, to_delete?: SongType) => SongType
 	isPicked?: boolean
 	matchingTempoObj?: matchingTempoObj
+	setIsPicked:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const PlaylistContext = createContext<usePlaylistContextValuesType>(null)
@@ -62,9 +62,18 @@ export const usePlaylistContextValues = () => {
 			})
 		}
 
-		const tempoArr = delete_id
+		let tempoArr = delete_id
 			? matchingTempoObj[key].filter((idTempo) => idTempo[0] != delete_id)
 			: matchingTempoObj[key]
+		let add_to_key = 10
+		let change_sign = -1
+		while (tempoArr && tempoArr.length < 1) {
+			const new_key = key + add_to_key * change_sign
+			if (Object.keys(matchingTempoObj).includes(new_key.toString()))
+				tempoArr = matchingTempoObj[key + add_to_key * change_sign]
+			if (change_sign > 0) add_to_key += 10
+			change_sign *= -1
+		}
 
 		if (tempoArr && tempoArr.length) {
 			const randomTrack = Math.floor(Math.random() * tempoArr.length)
@@ -78,5 +87,6 @@ export const usePlaylistContextValues = () => {
 		findSuitableSong,
 		isPicked,
 		matchingTempoObj,
+		setIsPicked,
 	}
 }

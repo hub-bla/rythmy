@@ -16,29 +16,60 @@ import { Title } from "../components/styledComponents/Tittle"
 import { AccelerometerData } from "../components/AccelerometerData"
 import { useCadenceContext } from "../context/CadenceContext"
 export const RunPage: React.FC = () => {
-	const { findSuitableSong, isPicked } = usePlaylistContext()
+	const { findSuitableSong, isPicked, setIsPicked } = usePlaylistContext()
 
 	const { getDevices, devices, playSong, pausePlayer, handleEndOfSong } =
 		usePlayerContext()
-	const {contextCadence} = useCadenceContext()
+	const { contextCadence, NUM_OF_MEASUREMENTS, mean, std } = useCadenceContext()
 	const { tokenData } = useAuthContext()
 	const [currentDevice, setCurrDevice] = useState<Device>(null)
 	const [currentCadence, setCurrentCadence] = useState(0)
 	const [currentSong, setCurrentSong] = useState(null)
 	const [prevCadence, setPrevCadence] = useState(0)
+	const [cadenceArr, setCadenceArr] = useState([])
+
+	const handleCadenceArr = (newCadence) => {
+		console.log(cadenceArr.length, cadenceArr.length >= NUM_OF_MEASUREMENTS)
+		if (cadenceArr.length >= NUM_OF_MEASUREMENTS) {
+			setCadenceArr((prevCadenceArr) => {
+				console.log(prevCadenceArr)
+				prevCadenceArr.shift()
+				console.log(prevCadenceArr)
+				prevCadenceArr.push(newCadence)
+				return prevCadenceArr
+			})
+		} else {
+			setCadenceArr((prevCadenceArr) => [...prevCadenceArr, newCadence])
+		}
+	}
+
 	useEffect(() => {
 		if (isPicked && currentDevice) {
 			const cadence = contextCadence
+			handleCadenceArr(cadence)
 			const key =
 				Math.floor(cadence / 10) * 10 < 90 ? 90 : Math.floor(cadence / 10) * 10
+			let secondChance = false
 
+			const meanCadence =
+				cadenceArr.length == NUM_OF_MEASUREMENTS
+					? [mean(cadenceArr), std(cadenceArr)]
+					: null
+
+			if (
+				meanCadence &&
+				Math.abs(cadence - meanCadence[0]) <= meanCadence[1] * 2
+			)
+				secondChance = true
+			console.log("MEAN AND STD", meanCadence)
 			console.log("CADENCE", cadence)
 			console.log("CURRENT SONG", currentSong)
 			console.log("KEY", currentSong ? currentSong.key : null)
-			if (cadence == 0) {
+
+			if (cadence <= 10) {
 				pausePlayer(tokenData.access_token, currentDevice).then()
 				setCurrentSong(null)
-			} else if (currentSong && currentSong.key == key) {
+			} else if ((currentSong && currentSong.key == key) || secondChance) {
 				const { duration_ms } = currentSong
 				handleEndOfSong(tokenData.access_token).then((progress_ms) => {
 					const last_ms = duration_ms - progress_ms
@@ -69,7 +100,7 @@ export const RunPage: React.FC = () => {
 			setPrevCadence(currentCadence)
 			setCurrentCadence(cadence)
 		}
-	}, [isPicked, contextCadence, currentCadence, currentSong])
+	}, [isPicked, contextCadence])
 
 	useEffect(() => {
 		getDevices(tokenData.access_token)
@@ -115,6 +146,12 @@ export const RunPage: React.FC = () => {
 							title='Change device'
 							onPress={() => {
 								setCurrDevice(null)
+							}}
+						/>
+						<Button
+							title='Change playlist'
+							onPress={() => {
+								setIsPicked(false)
 							}}
 						/>
 						<AccelerometerData />

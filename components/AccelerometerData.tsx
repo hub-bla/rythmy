@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react"
 import { Accelerometer } from "expo-sensors"
 import { useCadenceContext } from "../context/CadenceContext"
 
-
 const TRESHOLD = 2
 export const AccelerometerData = () => {
 	const [{ x, y, z }, setData] = useState({
@@ -10,18 +9,20 @@ export const AccelerometerData = () => {
 		y: 0,
 		z: 0,
 	})
-    const {handleContextCadence} = useCadenceContext()
+	const {
+		handleContextCadence,
+		NUM_OF_MEASUREMENTS,
+		MEASURE_TIME,
+	} = useCadenceContext()
 	const [subscription, setSubscription] = useState(null)
 	const [counter, setCounter] = useState(0)
 
 	const countRef = useRef(counter)
-    if (counter!=0 && countRef.current==0) {
-        counter ==1 ? setCounter(counter+1): setCounter(0)
-
-    }
+	if (counter != 0 && countRef.current == 0) {
+		counter == 1 ? setCounter(counter + 1) : setCounter(0)
+	}
 	countRef.current = counter
 
-	const _slow = () => Accelerometer.setUpdateInterval(1000)
 	const _fast = () => Accelerometer.setUpdateInterval(25)
 	const _subscribe = () => {
 		setSubscription(Accelerometer.addListener(setData))
@@ -36,13 +37,12 @@ export const AccelerometerData = () => {
 		if (counter === 0) _fast()
 		_subscribe()
 		const logCounterInterval = setInterval(() => {
-            handleContextCadence(countRef.current*6)
-			console.log("CADENCE", countRef.current*6)
+			handleContextCadence(countRef.current * NUM_OF_MEASUREMENTS)
 			setTimeout(() => {
 				setCounter(0)
 				countRef.current = 0
 			}, 250)
-		}, 10000)
+		}, MEASURE_TIME)
 
 		return () => {
 			clearInterval(logCounterInterval)
@@ -56,7 +56,5 @@ export const AccelerometerData = () => {
 			setCounter(counter == null ? 0 : counter + 1)
 		}, 250)
 	}
-	return (<></>
-		
-	)
+	return <></>
 }
