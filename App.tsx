@@ -8,13 +8,19 @@ import {
 	usePlaylistContextValues,
 } from "./context/PlaylistContext"
 import { PlayerContext, usePlayerContextValues } from "./context/PlayerContext"
+import {
+	CadenceContext,
+	useCadenceContextValues,
+} from "./context/CadenceContext"
 export default function App() {
 	return (
 		<View style={styles.container}>
 			<AuthContext.Provider value={useAuthContextValues()}>
 				<PlaylistContext.Provider value={usePlaylistContextValues()}>
 					<PlayerContext.Provider value={usePlayerContextValues()}>
-						<Main />
+						<CadenceContext.Provider value={useCadenceContextValues()}>
+							<Main />
+						</CadenceContext.Provider>
 					</PlayerContext.Provider>
 				</PlaylistContext.Provider>
 			</AuthContext.Provider>
