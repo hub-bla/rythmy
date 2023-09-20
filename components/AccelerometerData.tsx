@@ -3,7 +3,7 @@ import { Accelerometer } from "expo-sensors"
 import { useCadenceContext } from "../context/CadenceContext"
 
 const TRESHOLD = 2
-export const AccelerometerData = () => {
+export const AccelerometerData:React.FC = () => {
 	const [{ x, y, z }, setData] = useState({
 		x: 0,
 		y: 0,

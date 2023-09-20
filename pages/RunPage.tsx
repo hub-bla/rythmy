@@ -1,15 +1,8 @@
 import { useState, useEffect } from "react"
-import {
-	Text,
-	View,
-	TouchableOpacity,
-	StyleSheet,
-	Animated,
-} from "react-native"
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native"
 import { usePlaylistContext } from "../context/PlaylistContext"
 import { useAuthContext } from "../context"
 import { Device, usePlayerContext } from "../context/PlayerContext"
-import { Pedometer } from "expo-sensors"
 import { Cadencometer } from "../components/Cadencometer"
 import { Button } from "../components/styledComponents/Button"
 import { Title } from "../components/styledComponents/Tittle"
@@ -165,7 +158,6 @@ export const RunPage: React.FC = () => {
 
 const styles = StyleSheet.create({
 	device: {
-		// height: 50,
 		margin: 10,
 	},
 

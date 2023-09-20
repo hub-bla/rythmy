@@ -1,6 +1,15 @@
 import { createContext, useContext, useState } from "react"
 
-export const CadenceContext = createContext(null)
+type CadenceContextValuesType = {
+	handleContextCadence: (newCadence:number) => void
+	contextCadence: number
+	NUM_OF_MEASUREMENTS: number
+	MEASURE_TIME:number
+	mean: (cadenceArr:number[]) => number
+	std: (cadenceArr:number[]) => number
+}
+
+export const CadenceContext = createContext<CadenceContextValuesType>(null)
 
 export const useCadenceContext = () => {
 	const context = useContext(CadenceContext)
@@ -13,7 +22,7 @@ export const useCadenceContext = () => {
 
 export const useCadenceContextValues = () => {
 	const [contextCadence, setContextCadence] = useState(0)
-	
+
 	const MEASURE_TIME = 10000 //in milisecond
 	const NUM_OF_MEASUREMENTS = 60 / (MEASURE_TIME / 1000)
 
@@ -21,18 +30,19 @@ export const useCadenceContextValues = () => {
 		setContextCadence(newCadence)
 	}
 
-
-
-	const mean = (cadenceArr) => {
-		const sum = cadenceArr.reduce((partialSum, a) => partialSum + a, 0);
-		const meanResult = sum /cadenceArr.length
+	const mean = (cadenceArr:number[]) => {
+		const sum = cadenceArr.reduce((partialSum, a) => partialSum + a, 0)
+		const meanResult = sum / cadenceArr.length
 		return meanResult
 	}
 
-	const std = (cadenceArr) => {
+	const std = (cadenceArr:number[]) => {
 		const arrMean = mean(cadenceArr)
-		const sum = cadenceArr.reduce((partialSum, a) => partialSum + Math.pow(a - arrMean, 2), 0);
-		const stdResult = Math.sqrt(sum/(cadenceArr.length-1))
+		const sum = cadenceArr.reduce(
+			(partialSum, a) => partialSum + Math.pow(a - arrMean, 2),
+			0
+		)
+		const stdResult = Math.sqrt(sum / (cadenceArr.length - 1))
 		return stdResult
 	}
 
@@ -42,6 +52,6 @@ export const useCadenceContextValues = () => {
 		NUM_OF_MEASUREMENTS,
 		MEASURE_TIME,
 		mean,
-		std
+		std,
 	}
 }
