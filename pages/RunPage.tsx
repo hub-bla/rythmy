@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react"
-import { Text, View, TouchableOpacity, StyleSheet } from "react-native"
+import { Text, View,  StyleSheet } from "react-native"
 import { usePlaylistContext } from "../context/PlaylistContext"
 import { useAuthContext } from "../context"
-import { Device, usePlayerContext } from "../context/PlayerContext"
+import { DeviceDataType, usePlayerContext } from "../context/PlayerContext"
 import { Cadencometer } from "../components/Cadencometer"
 import { Button } from "../components/styledComponents/Button"
-import { Title } from "../components/styledComponents/Tittle"
 import { AccelerometerData } from "../components/AccelerometerData"
 import { useCadenceContext } from "../context/CadenceContext"
+import { PickDevice } from "../components/pickDevice"
+
+
+
 export const RunPage: React.FC = () => {
 	const { findSuitableSong, isPicked, setIsPicked } = usePlaylistContext()
 
@@ -15,7 +18,7 @@ export const RunPage: React.FC = () => {
 		usePlayerContext()
 	const { contextCadence, NUM_OF_MEASUREMENTS, mean, std } = useCadenceContext()
 	const { tokenData } = useAuthContext()
-	const [currentDevice, setCurrDevice] = useState<Device>(null)
+	const [currentDevice, setCurrDevice] = useState<DeviceDataType>(null)
 	const [currentCadence, setCurrentCadence] = useState(0)
 	const [currentSong, setCurrentSong] = useState(null)
 	const [prevCadence, setPrevCadence] = useState(0)
@@ -34,6 +37,13 @@ export const RunPage: React.FC = () => {
 		} else {
 			setCadenceArr((prevCadenceArr) => [...prevCadenceArr, newCadence])
 		}
+	}
+
+	const handleCurrentDeviceChange = (id:string, name:string) => {
+		setCurrDevice({
+			id: id,
+			name: name,
+		})
 	}
 
 	useEffect(() => {
@@ -95,41 +105,19 @@ export const RunPage: React.FC = () => {
 		}
 	}, [isPicked, contextCadence])
 
+
+
 	useEffect(() => {
 		getDevices(tokenData.access_token)
 	}, [])
 
-	const devicesArr = devices.map((device) => {
-		return (
-			<TouchableOpacity
-				key={device.id}
-				style={styles.device}
-				onPress={() =>
-					setCurrDevice({
-						id: device.id,
-						name: device.name,
-					})
-				}>
-				<View>
-					<Text>{device.name}</Text>
-				</View>
-			</TouchableOpacity>
-		)
-	})
+	
 
 	return (
 		<>
 			{!currentDevice ? (
-				<>
-					<Title>Pick device</Title>
-					{devicesArr}
-					<Button
-						title='Refresh'
-						onPress={() => {
-							getDevices(tokenData.access_token)
-						}}
-					/>
-				</>
+				<PickDevice devicesArr={devices} handleCurrentDeviceChange={handleCurrentDeviceChange}/>
+					
 			) : (
 				<>
 					<View style={styles.deviceContainer}>

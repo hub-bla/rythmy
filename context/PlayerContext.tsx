@@ -1,20 +1,20 @@
 import { createContext, useContext, useState } from "react"
 import { SongType } from "./PlaylistContext"
 
-export type Device = {
+export type DeviceDataType = {
 	id: string
 	name: string
 }
 
 export type PlayerContextType = {
 	getDevices: (token: string) => Promise<void>
-	devices: Device[]
+	devices: DeviceDataType[]
 	playSong: (
 		song: SongType,
 		token: string,
-		currentDevice: Device
+		currentDevice: DeviceDataType
 	) => Promise<void>
-	pausePlayer: (token: string, currentDevice: Device) => Promise<void>
+	pausePlayer: (token: string, currentDevice: DeviceDataType) => Promise<void>
 	handleEndOfSong: (token: string) => Promise<number>
 }
 
@@ -33,7 +33,7 @@ export const usePlayerContext = () => {
 }
 
 export const usePlayerContextValues = () => {
-	const [devices, setDevices] = useState<Device[]>([])
+	const [devices, setDevices] = useState<DeviceDataType[]>([])
 
 	const getDevices = async (token: string) => {
 		await (
@@ -46,7 +46,7 @@ export const usePlayerContextValues = () => {
 			.json()
 			.then((data) => {
 				setDevices(
-					data.devices.map((device: Device) => {
+					data.devices.map((device: DeviceDataType) => {
 						return {
 							id: device.id,
 							name: device.name,
@@ -60,7 +60,7 @@ export const usePlayerContextValues = () => {
 	const playSong = async (
 		song: SongType,
 		token: string,
-		currentDevice: Device
+		currentDevice: DeviceDataType
 	) => {
 		if (currentDevice) {
 			//add to queue
@@ -87,7 +87,7 @@ export const usePlayerContextValues = () => {
 		}
 	}
 
-	const pausePlayer = async (token: string, currentDevice: Device) => {
+	const pausePlayer = async (token: string, currentDevice: DeviceDataType) => {
 		if (currentDevice) {
 			await fetch(`https://api.spotify.com/v1/me/player/pause`, {
 				method: "PUT",

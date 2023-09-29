@@ -1,8 +1,7 @@
-import { Pressable, StyleSheet, Text } from "react-native"
+import { Pressable, PressableProps, StyleSheet, Text, View } from "react-native"
 
-type ButtonProps = {
+interface ButtonProps extends PressableProps {
 	title: string
-	onPress: () => void
 }
 
 export const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
